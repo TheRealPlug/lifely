@@ -411,7 +411,7 @@ function age_events(){
 				});
 			is_jailed = false;
 			user.job = "Unemployed";
-
+			jail_months_spent = 0;
 			$("#jail").attr("onclick","actions()");
 			$("#jail").attr("class","btn-lg btn-danger");
 			$("#jail").attr("id","actions");
@@ -864,7 +864,7 @@ function scholarship(type) {
 		if (intellect >= 80){
 		Swal.fire({title:"You got the scholarship!",
 		icon:"success"});
-		user.job = "Engineering Student";
+		user.job = "Engineering College Student";
 		message("You were awarded a scholarship	at an Engineering College");
 		message(`You are now enrolled in an Engineering College`);
 		student();
@@ -879,7 +879,7 @@ function scholarship(type) {
 		if (intellect >= 75){
 		Swal.fire({title:"You got the scholarship!",
 		icon:"success"});
-		user.job = "Graduate Student";
+		user.job = "Graduate College Student";
 		message("You were awarded a scholarship	at a Graduate College");
 		message(`You are now enrolled in a Graduate College`);
 		student();
@@ -894,7 +894,7 @@ function scholarship(type) {
 		if (intellect >= 80){
 		Swal.fire({title:"You got the scholarship!",
 		icon:"success"});
-		user.job = "Commerce Student";
+		user.job = "Commerce College Student";
 		message("You were awarded a scholarship	at a Commerce College");
 		message(`You are now enrolled in a Commerce College`);
 		student();
@@ -909,7 +909,7 @@ function scholarship(type) {
 		if (intellect >= 75){
 		Swal.fire({title:"You got the scholarship!",
 		icon:"success"});
-		user.job = "Arts Student";
+		user.job = "Arts College Student";
 		message("You were awarded a scholarship	at an Arts College");
 		message(`You are now enrolled in an Arts College`);
 		student();
@@ -924,7 +924,7 @@ function scholarship(type) {
 		if (intellect >= 80){
 		Swal.fire({title:"You got the scholarship!",
 		icon:"success"});
-		user.job = "Law Student";
+		user.job = "Law College Student";
 		message("You were awarded a scholarship	at a Law College");
 		message(`You are now enrolled in a Law College`);
 		student();
@@ -939,7 +939,7 @@ function scholarship(type) {
 		if (intellect >= 80){
 		Swal.fire({title:"You got the scholarship!",
 		icon:"success"});
-		user.job = "Medical Student";
+		user.job = "Medical College Student";
 		message("You were awarded a scholarship	at a Medical College");
 		message(`You are now enrolled in an Medical College`);
 		student();
@@ -1032,7 +1032,7 @@ function student_pass(){
 	else if (deg.includes("Commerce") == true){
 		var course = "COM";
 	}
-	else if (deg.includes("Art") == true){
+	else if (deg.includes("Arts") == true){
 		var course = "ARTS";
 	}
 	else if (deg.includes("Law") == true){
@@ -1068,19 +1068,25 @@ function student_pass(){
 var has_job = false;
 var salary = 0;
 function jobs(){
-	var list = [{"Sr. Engineer":[4000,5000]},
+	var list = [{"Senior Engineer":[4000,5000]},
 	{"Teacher":[2000,3000]},{"Firefighter":[2000,3000]},
-	{"Jr. Engineer":[3500,4500]},{"Gardener":[500,800]},
+	{"Junior Engineer":[3500,4500]},{"Gardener":[500,800]},
 	{"Police Officer":[3000,4000]},{"Soldier":[1500,2500]},
 	{"Army Officer":[2500,3500]},{"Marine Biologist":[2000,4000]},
-	{"Data Scientist":[4000,5000]},{"Garbage Collector":[400,700]},
-	{"Jr. Pilot":[6000,8000]},{"Sr. Pilot":[10000,14000]},
+	{"Data Scientist":[4000,5000]},{"Garbage Collector":[500,800]},
+	{"Junior Pilot":[5000,6000]},{"Senior Pilot":[6000,9000]},
 	{"Chef":[2000,2500]},{"Lawyer":[4000,5000]},{"Banker":[4000,5000]},
-	{"Artist":[2000,4000]},{"Sweeper":[400,700]},
-	{"Doctor":[6000,7000]},{"Judge":[6000,7500]},
-	{"Property Dealer":[3000,4000]}
-
+	{"Artist":[2000,4000]},{"Sweeper":[400,800]},
+	{"Doctor":[5000,7000]},{"Judge":[6000,7500]},
+	{"Property Dealer":[3000,4000]},{"Waiter":[1000,1500]},
+	{"Head Chef":[3000,5000]},{"McDonalds Worker":[500,800]},
+	{"Security Guard":[1500,2000]},{"Mall Cop":[1500,2000]},
+	{"Clown":[500,700]},{"Truck Driver":[600,1200]},
+	{"Graphic Designer":[3000,4000]},{"Attorney":[3000,4000]},
+	{"District Magistrate":[5000,6000]},{"Veterenarian":[5000,6500]},
+	{"Biologist":[6000,6500]},{"Senior Doctor":[7000,10000]}
 	];
+	//boop
 	var btns = [];
 	var jobs = {};
 	for (x=0;x<6;x++){
@@ -1133,10 +1139,10 @@ function check_job(job_name,salary){
 		job_qualified = true;
 
 	}
-	else if (job_name == "Jr. Engineer"){
+	else if (job_name == "Junior Engineer"){
 		req = ["ENG"];
 	}
-	else if (job_name == "Sr. Engineer"){
+	else if (job_name == "Senior Engineer"){
 		req = ["ENG"];
 		xp = 60;
 		need_xp = true;
@@ -1163,10 +1169,10 @@ function check_job(job_name,salary){
 	else if (job_name == "Data Scientist"){
 		req = ["ENG"];
 	}
-	else if (job_name == "Jr. Pilot"){
+	else if (job_name == "Junior Pilot"){
 		req = ["ENG"];
 	}
-	else if (job_name == "Sr. Pilot"){
+	else if (job_name == "Senior Pilot"){
 		req = ["ENG"];
 		xp = 60;
 		need_xp = true;
@@ -1181,7 +1187,7 @@ function check_job(job_name,salary){
 		req = ["COM"];
 	}
 	else if (job_name == "Artist"){
-		req = ["ART"];
+		req = ["ARTS"];
 	}
 	else if (job_name == "Sweeper"){
 		job_qualified = true;
@@ -1197,9 +1203,62 @@ function check_job(job_name,salary){
 	else if (job_name == "Property Dealer"){
 		req = ["GRAD","ENG","COM"];
 	}
-	else {
-		document.write("ERROR in check_job()");
-	};
+	else if (job_name == "Waiter"){
+		req = ["GRAD","COMMUNITY","ARTS"];
+	}
+	else if (job_name == "Head Chef"){
+		req = ["COMMUNITY","GRAD","ARTS"];
+		xp = 60;
+		need_xp = true;
+	}
+	else if (job_name == "McDonalds Worker"){
+		job_qualified = true;
+	}
+	else if (job_name == "Security Guard"){
+		req = ["ARTS","GRAD","COMMUNITY"];
+	}
+
+	else if (job_name == "Mall Cop"){
+		req = ["ARTS","GRAD","COMMUNITY"];
+	}
+	else if (job_name == "Clown"){
+		job_qualified = true;
+	}
+	else if (job_name == "Truck Driver"){
+		let chance = randint(0,1)
+		if (chance == 1){
+			job_qualified = true;
+		}
+	}
+
+	else if (job_name == "Graphic Designer"){
+		req = ["ENG","ARTS"];
+	}
+
+	else if (job_name == "Attorney"){
+		req = ["LAW"];
+	}
+
+	else if (job_name == "District Magistrate"){
+		req = ["LAW"];
+		xp = 60;
+		need_xp = true;
+	}
+
+	else if (job_name == "Veterenarian"){
+		req = ["MED"];
+	}
+
+	else if (job_name == "Biologist"){
+		req = ["MED"];
+	}
+
+	else if (job_name == "Senior Doctor"){
+		req = ["MED"];
+		xp = 120;
+		need_xp = true;
+	}
+
 
 
 	for (x in degree){
