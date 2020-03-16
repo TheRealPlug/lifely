@@ -2588,7 +2588,12 @@ function purchase(item){
 		{"2 BHK Cottage":70000},{"3 BHK Cottage":90000},
 		{"4 BHK Cottage":120000},{"1 Room Cottage":40000},
 		{"2 BHK Modern House":120000},{"3 BHK Modern House":150000},
-		{"4 BHK Modern House":200000},{"1 Room Modern House":90000}
+		{"4 BHK Modern House":200000},{"1 Room Modern House":90000},
+		{"Expensive Mansion":1000000},{"Suburb House":160000},
+		{"2 BHK Luxury House":200000},{"4 BHK Luxury House":420000},
+		{"5 BHK Duplex":300000},{"Royal Bungalow":5000000},
+		{"Medieval Castle":10000000},{"Compact House":25000}
+
 		];
 		let all = [];
 		for (x=0;x<4;x++){
@@ -2632,7 +2637,9 @@ function purchase(item){
 		{"Volkswagen Car (Used)":12000},{"Volkswagen Car":35000},
 		{"BMW Car (Used)":22000},{"BMW Car":50000},
 		{"Audi Car (Used)":21000},{"Audi Car":45000},
-		{"Lambhorgini":120000},{"Harley Davidson Bike":30000}
+		{"Lamborghini":120000},{"Harley Davidson Bike":40000},
+		{"Ford Car (Used)":15000},{"Ford Car":40000},
+		{"Toyota Prius (Used)":9000},{"Toyota Prius":30000}
 		];
 		let all = [];
 		for (x=0;x<4;x++){
@@ -2786,17 +2793,15 @@ function confirm(title,text=null){
 
 
 
-var intro_disabled = false;
+var intro_disabled = true;
 function intro(){
 	if (intro_disabled == false){
 		var html = 
 		`
-		<br><hr><br>
 		You start off as a random person with random features in
 		a random country. You can live your life in any way you want.
 		All this with simple button clicks.
 		Lifely helps you visualize different situations in life.<br>		
-		<br><hr><br>
 		`;
 
 		Swal.fire({

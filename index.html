@@ -8,22 +8,26 @@
 <link rel="stylesheet" href="w3.css" type="text/css">
 <link rel="stylesheet" href="bootstrap.min.css" type="text/css">
 <link rel="stylesheet" href="style.css" type="text/css">
-
 <link rel="stylesheet" href="sweetalert2.css" type="text/css">
+<script src="https://kit.fontawesome.com/1279dac364.js" crossorigin="anonymous"></script>
 
 
 </head>
 <body>
 <div class="container page">
-	
-	<span id="money-block">MONEY : <span id="money"></span>$</span>
+<i class="fas fa-money-bill-alt w-5" style="color:#85bb65"></i>&nbsp;
+<span id="money-block">MONEY : <span id="money"></span>$</span>
 <br>
+<i class="fas fa-heartbeat" style="color:#d31747"></i>&nbsp;
 <span id="health-block">HEALTH : <span id="health"></span>%</span>
 <br>
+<i class="fas fa-fist-raised" style="color:#ffe0bd"></i>&nbsp;
 <span id="morale-block">MORALE : <span id="morale"></span>%</span>
 <br>
+<i class="fas fa-brain" style="color:#ffa6c9"></i>&nbsp;
 <span id="intellect-block">INTELLECT : <span id="intellect"></span>%</span>
 <br>
+<i class="fas fa-fire" style="color:#e25822"></i>&nbsp;
 <span id="looks-block">LOOKS : <span id="looks"></span>%</span>
 <br>
 <hr>
@@ -32,19 +36,16 @@
 <hr>
 <div class="console">
 
-
-
 </div>
 <br><br><hr>
 
 
 <div class="main">
-
 	
 <button id="actions" class="btn-lg btn-danger" onclick="actions()">Actions</button>
 
 <button id="update" class="btn-lg btn-danger">Age More</button>
-<button id="profile" class="btn-lg btn-danger" onclick="profile()">Profile</button>
+<button id="profile" class="btn-lg btn-secondary" onclick="profile()">Profile</button>
 <button id="assets" class="btn-lg btn-danger" onclick="assets()">Assets</button>
 <button id="activities" class="btn-lg btn-danger" onclick="activities()">Activities</button>
 
