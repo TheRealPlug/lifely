@@ -266,12 +266,8 @@ function age_events(){
 		};
 	};
 
+	monthly_budget();
 
-
-	if (user.age/12 == 35){
-		message("You can no longer study in any college now");
-		$("#study-btn").hide();
-	};
 
 	if (user.age/12 > 40){
 
@@ -424,10 +420,152 @@ function age_events(){
 	};
 
 
-
+	
 	display();
 
 };
+
+
+
+
+function monthly_budget(){
+	if (is_jailed == false){
+		if (has_job){
+			var amt = Math.floor(user.salary*21/100);
+			money -= total_budget;
+			message(`You paid <b>${total_budget}$</b> as monthly budget`);
+			if (amt > total_budget){
+				message(`You should consider increasing your budget`);
+				budget_less();
+			}
+
+		}/*
+		else if (is_student){
+			var amt = randint(100,200);
+			total_student_loan += total_budget;
+			if (student_has_loan){
+				message(`Total budget for month was added to student loan`);	
+			}
+			else {
+				message(`Total budget for month was paid by scholarship program`);
+			}
+		}*/
+		else if (user.job == "Unemployed"){
+			var amt = money*randint(8,9)/100;
+			money -= total_budget;
+			message(`You paid <b>${total_budget}$</b> as monthly budget`);
+			if (amt > total_budget){
+				message(`You should consider increasing your budget`);
+				budget_less();
+			}
+		}
+
+	}
+
+};
+
+
+function budget_less(){
+	let rand = randint(1,3);
+	if (rand == 1){
+		health -= 1;
+	}
+	if (rand == 2){
+		morale -= 1;
+	}
+	display();
+};
+
+
+var total_budget = 100;
+function budget(){
+
+	let html = `
+	<br><h4>Current Budget : <b>${total_budget}$</b></h4><hr>
+	<button onclick="modify_budget()" class="btn btn-success">Modify Budget</button><br><br>
+		
+	`;
+
+	Swal.fire({
+		title:"Budget",
+		position:"top",
+		html:html,
+		showConfirmButton:false,
+		footer:"NOTE : Budget is essential for living a sustained life."
+	});
+
+
+};
+
+
+
+function modify_budget(){
+	var assets_costs = 0;
+	for (x in user.assets){
+
+	};
+
+	if (has_job){
+		var recom = Math.floor(user.salary*randint(20,25)/100+assets_costs);
+
+	}
+	else {
+		if (user.job == "Unemployed"){
+			let range = randint(money*10/100,money*25/100);
+			var recom = Math.floor(range+assets_costs);
+			if (recom < 100){
+				recom = 100;
+			}
+		}
+		else if (is_student){
+			total_budget = 0;
+		}
+	};
+	let html = `
+	<h4>Current Budget : <b>${total_budget}$</b></h4>
+	<h4>Recommended Budget : <b>${recom}$</b></h4><br><br>
+	`;
+
+	Swal.fire({
+		title:"Modifying Budget",
+		html:html,
+		icon:"info",
+		showCancelButton:true,
+		confirmButtonText:"Modify",
+		cancelButtonText:"Leave",
+		input:"text",
+		inputValue:recom,
+		inputValidator: (val) => {
+			let isnum = /^\d+$/.test(val);
+			if (isnum == true && val > money/2){
+				return "Too big of a budget for you!"
+			}
+			else if (isnum == true && val >= 100){
+				message(`You changed your monthly budget to <b>${val}$</b>`);
+				Swal.fire({
+					icon:"success",
+					title:`Monthly budget changed to ${val}$`,
+					confirmButtonText:"Nice"
+				});
+				total_budget = val;
+			}
+			else if (!val){
+				return `Please specify a budget`
+			}
+			else if (isnum == false){
+				return `Please specify a number`
+			}
+			else if (val < 100){
+				return `Budget can't be lesser than 100$`
+			}
+			else {
+				return `Only put a number!`
+			};
+		}
+	});
+};
+
+
 
 
 
@@ -478,10 +616,47 @@ function generate(object,amount){
 
 	};
 
+	if (object == "name"){
+
+		var male_name = [
+		'Aiden','Arron','Zach','James','Alan','Harry','Peter','Steve',
+		'Tom','Tim','Gary','Sam','Kevin','Mark','Chester','Mike',
+		'Edward','Dyson','Tyson','Ravi','Aakash','Howard','Tony','Jason',
+		'Jordan','Felix','Quinton','Rohit','Alex','Alexander','Steven',
+		'Liam','James','Kendrick','Austin','Bailey','Elgar','Edgar',
+		'Carl','Markus','Hector','Wyatt','Ryan','Dilbert','Gilbert',
+		'Ronald','Charlie','Donald','Jacob','Jake','Jonathon','John',
+		'Kelvin','Corey','Matthew',"Draco","Zach","Henry"
+
+		];
+
+		var last_name = [
+		'Smith','Markram','Wolfram','Woods','Marsh','Anderson','Wright',
+		'Simpson','Joyce','Burns','Lee','Hooper','Stark','Starc','Barker',
+		'Parker','Butler','Hodges','Holmes','Garner','Lawrence',
+		'Kumar','Sharma','Singh','Oliver','Cruz','Dean','Nelson',
+		'Stuart','Woody','Turner','Rhodes','Washington','Owens',
+		'Osborn','Florence','Wilson','Patterson','Peterson','Riley',
+		'Dawson','Blair','Waters','Park','Miller','Bennington',
+		'Leonard','Marshall','Stone','Roy','Stokes','Morgan','Freeman',
+		'Yates','Drake','Wade','Griffin','Stevens','Stevenson','Cook',
+		'Williams','Williamson','Sodhi','Pierce','Roberts','Newtons',
+		'Lyon','Perkins','Perkinson','Paul','Goodman','Sanders',
+		'Smith','Smith','Lee','Anderson','Little','Hales','Marshall',
+		'Kumar','Alexson','Guzman','Chambers','Phelps','Hughes','Malfoy',
+		'Jackson','Coleson','Carlson','Mason','Bond'
+
+		];
+		let fname = male_name[randint(0,male_name.length)];
+		let lname = last_name[randint(0,last_name.length)];
+		if (user.name.includes(fname) || user.name.includes(lname)){
+			generate("name",1);
+		}
+		var name = `${fname} ${lname}`;
+		return name;
 
 
-
-
+	};
 
 };
 
@@ -1346,13 +1521,20 @@ function start_job(job_name,salary){
 
 
 
+
+
+
+
+
+
 function job_menu(){
 	Swal.fire({
 		position:"top",
 		title:"Job Actions",
 		showConfirmButton:false,
 		html:
-		`<br><hr><br>`+
+		`<br><button id="budget" class="btn-lg btn-info" onclick="budget()">Budget</button><br><br>`+
+		`<br><hr>`+
 		`Monthly Salary - ${user.salary}$<br>`+
 		`Occupation - ${user.job}<br>`+
 		`Experience - <b>${user.xp}</b> months<br>`+
@@ -1360,7 +1542,6 @@ function job_menu(){
 		`<br><hr><br>`+
 		`<button onclick="ask_raise()" class="btn btn-info">Ask For Raise</button><br><br>`+
 		`<button onclick="leave_job()" class="btn btn-primary">Leave Job</button><br><br>`
-
 		
 	});
 
@@ -1890,15 +2071,100 @@ function jail(months){
 
 
 function jail_menu(){
-
+	let html = `
+	<br><hr><br>Time Spent - <b>${jail_months_spent}</b>/${jail_months} months<br>
+	Imprisoned in ${user.country}
+	`;
 	Swal.fire({
 		title:"Jail Actions",
 		showConfirmButton:false,
-		html:`<br><hr><br>Time Spent - <b>${jail_months_spent}</b>/${jail_months} months`
+		html:html
 
 	});
 
 };
+
+function jail_bully(){
+	health -= randint(3,6);
+	looks -= randint(1,2);
+	morale -= randint(3,5)
+	display();
+	var bully = generate("name",1);
+	message(`You were beaten up in jail by ${bully}`);
+	
+	let html = `
+	<br>
+	A jail bully named ${bully} beat you up in jail.<br>
+	`;
+	Swal.fire({
+		icon:"warning",
+		title:"You were beaten up in Jail!",
+		html:html,
+		confirmButtonText:"Forget it",
+		showCancelButton:true,
+		cancelButtonText:"Retaliate!"
+	}).then((result) =>{
+		if (result.dismiss == Swal.DismissReason.cancel){
+			message(`You decided to attack your jail bully`);
+			let chance = randint(1,2);
+			if (chance == 1){
+				//thrashed the shit outta him
+				message(`You thrashed ${bully}`);
+				let html = `<br>
+				You ruthlessly thrashed <b>${bully}</b>!<br>
+				He won't be bullying you anytime soon!<br><br>
+				`;
+				Swal.fire({
+					icon:"success",
+					title:"You thrashed your jail bully!",
+					html:html,
+					confirmButtonText:"Easy"
+				});
+				morale += randint(5,7);
+			}
+			else {
+				message(`You got beaten up by ${bully} again`);
+				let html = `
+				You tried to beat <b>${bully}</b> but you failed miserably.<br>
+				You got a good beating in return.<br>
+				`;
+				Swal.fire({
+					title:"Backfired!",
+					icon:"error",
+					html:html,
+					confirmButtonText:"Where's my teeth..?"
+				});
+				health -= randint(3,6);
+			}
+		}
+
+	});
+
+};
+
+
+
+
+
+function jail_events(){
+	var chance = randint(0,10);
+
+	switch (chance){
+		default:
+			break;
+		case 0:
+			if (randint(1,2) == 1){
+				jail_bully();
+			}
+			break;
+		
+	};
+
+};
+
+
+
+
 
 
 
@@ -2011,8 +2277,8 @@ function actions(){
 	var html = 
 	`<br>
 	<button id="study-btn" class="btn-lg btn-info" onclick="study()">Study</button><br><br>
-	<button id="job-btn" class="btn-lg btn-info" onclick="jobs()">Jobs</button>
-
+	<button id="job-btn" class="btn-lg btn-info" onclick="jobs()">Jobs</button><br><br>
+	<button id="budget" class="btn-lg btn-info" onclick="budget()">Budget</button><br><br>
 	`;
 	Swal.fire({
 		position:"top",
@@ -2356,11 +2622,6 @@ function vacation(){
 
 	});
 };
-
-
-
-
-
 
 
 
@@ -2755,6 +3016,7 @@ function update(){
 	total_gym_count = 0;
 	total_lib_count = 0;
 	$(".console").text("");
+	
 	user.age = user.age + 1;
 	if (user.age % 12 != 0){
 		var months = user.age%12;
@@ -2766,11 +3028,26 @@ function update(){
 		$("#age").text(`Age : ${years} years`);
 
 	};
+	if (money <= 100){
+		morale -= 1;
+		let rand = randint(1,4)
+		if (rand == 1){
+			health -= 1;
+			looks -= 1;
+		}
+		else if (rand == 2){
+			intellect -= 1;
+		}
+	};
+
 	if (is_jailed != true){
 		random_event();
 	};
+	if (is_jailed){
+		jail_events();
+	}
 	age_events();
-
+	display();
 };
 
 
@@ -2793,7 +3070,7 @@ function confirm(title,text=null){
 
 
 
-var intro_disabled = true;
+var intro_disabled = false;
 function intro(){
 	if (intro_disabled == false){
 		var html = 
