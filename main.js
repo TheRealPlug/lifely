@@ -391,7 +391,7 @@ function age_events(){
 	if (has_job == true){
 		user.xp += 1;
 		money = money + user.salary;
-		var rand = randint(1,20);
+		var rand = randint(0,20);
 		message(`You were paid ${user.salary}$ as your salary`);
 		if (rand == 1){
 			var inc = randint(5,8);
@@ -399,6 +399,11 @@ function age_events(){
 			message(`You got a raise of ${raise}$`);
 			user.salary = user.salary + raise;
 			user.promos += 1;
+			Swal.fire({
+				title:`You were given a raise of <b>${raise}$</b>`,
+				icon:"success",
+				confirmButtonText:"Sweet!"
+			});
 
 		}
 		if (student_has_loan == true){
@@ -1689,6 +1694,7 @@ function ask_raise(){
 		Swal.fire({
 			icon:"success",
 			title:`You were given a raise of<b> ${raise}$</b>`,
+			confirmButtonText:"Sweet!"
 		});
 	}
 	else if (chance > 8){
@@ -3157,7 +3163,7 @@ function confirm(title,text=null){
 
 
 
-var intro_disabled = true;
+var intro_disabled = false;
 function intro(){
 	if (intro_disabled == false){
 		var html = 
