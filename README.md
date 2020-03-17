@@ -12,6 +12,21 @@ certain human attributes like health , morale , intellect and looks.<br>
 The main purpose of this game is to lead a life , experiment with it 
 and live as long as possible or become filthy rich!
 
+---
+## How do I play Lifely ?
+There are 5 main buttons in this game.
+1. Actions - It is used to view / do actions related to your status (like Job , Education).
+2. Age More - It is used to spend a month in game. The time spent clicking it is constant and is 1 month.
+3. Profile - Used to view the user profile for information. More features to be added to it.
+4. Assets - It is used to view / buy assets. Currently not fully developed.
+5. Activities - It is used to do several activities ranging from going to hospital to commiting crime!
+
+Along with all these features, each features in it has several other options which allow you to play the game.
+Lifely also has purely random events which allow you to play the game whilst enjoying it.
+The random events are generally choice based with each choice having a consequence!
+
+---
+
 # Note from Developer
 Hello. I'd like to inform people interested in this project (has 11 stars as of now) that I would not be available much
 for at least a month due to real life academic reasons. Yes! I'm 16 and I have a crucial academic year to go through!
@@ -29,5 +44,4 @@ Discord - wraithM17#0001<br>
 
 ---
 ## Thank You For Taking Interest In Lifely!
-(PS - I had to quickly write this readme.md file lol)
 ---
