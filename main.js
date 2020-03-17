@@ -297,9 +297,45 @@ function age_events(){
 
 			if (total_years == 1){
 				message(`You've completed your first year in college`);
+				let html = `<br>
+				Your Academic Performance - <b>${randint(30,100)}%</b><br>
+				`;
+				Swal.fire({
+					icon:"success",
+					title:"First year in college completed!",
+					html:html,
+					confirmButtonText:"Good!"
+				}).then((result) =>{
+					if (student_has_loan){
+
+						student_loan_notice();
+					}
+				});
 			}
 			else {
 				message(`You've completed ${total_years} years in college`);
+				let html = `<br>
+				Your Academic Performance - <b>${randint(30,100)}%</b><br>
+				`;
+				Swal.fire({
+					icon:"success",
+					title:`${total_years} years in college completed!`,
+					html:html,
+					confirmButtonText:"Good!"
+				}).then((result) =>{
+					if (student_has_loan){
+						student_loan_notice();
+					}
+					// 0 because stu months have been reset to 0
+					else if (student_months == 0){
+						Swal.fire({
+							icon:"success",
+							title:"You completed your College!",
+							confirmButtonText:"Sweet!"
+						});
+					};
+
+				});
 			};
 
 		};
@@ -309,11 +345,7 @@ function age_events(){
 		if (student_has_loan == true){
 
 			if (student_months%12==0){
-				var yearly_interest = Math.floor(student_fees*10/100);
-				var yearly_student_fees = Math.floor(student_fees/4)+yearly_interest;
-				total_student_loan = total_student_loan + yearly_student_fees;
-				message(`Your student loan increased by ${yearly_student_fees}$ as yearly student loans at 10% interest rate`);
-
+				
 			};
 			if (student_months >= 48){
 				message(`You have ${total_student_loan}$ as total student loans`);
@@ -339,6 +371,16 @@ function age_events(){
 			if (student_has_loan == true){
 				if (user.age/12 >= 30){
 					money = money - total_student_loan;
+					let html = `
+					You reached the student loan repayment deadline<br>
+					and had to pay <b>${total_student_loan}$</b><br>
+					`;
+					Swal.fire({
+						icon:"warning",
+						title:"Student Loan Deadline!",
+						html:html,
+						confirmButtonText:"Okay"
+					});
 					student_has_loan = false;
 					message(`Student loans repayment deadline has been reached`);
 					message(`You had to pay all your pending loans`);
@@ -424,6 +466,53 @@ function age_events(){
 	display();
 
 };
+
+
+
+function student_loan_notice(){
+	let int = randint(8,14);
+	var yearly_interest = Math.floor(student_fees*int/100);
+	var yearly_student_fees = Math.floor(student_fees/4)+yearly_interest;
+	total_student_loan = total_student_loan + yearly_student_fees;
+	let html = `<br>
+	Amount added this year - <b>${yearly_student_fees}$</b><br>
+	Total Interest Added - <b>${yearly_interest}$</b><br>
+	Interest Rate / Annum - <b>${int}%</b><br>
+	Total Student Debt - <b>${total_student_loan}$</b><br>
+	`;
+	Swal.fire({
+		title:"Student Loan Notice",
+		html:html,
+		confirmButtonText:"Noted",
+		icon:"info"
+	}).then((result) => {
+		if (student_months == 0){
+			let html = `<br>
+			As you've completed your time in college , <br>
+			you're no longer entitled to more college loans<br><br>
+			Total Student Debt - <b>${total_student_loan}$</b>
+			`
+			;
+			Swal.fire({
+				title:"No More Student Loans!",
+				html:html,
+				icon:"info",
+				confirmButtonText:"Nice"
+			}).then((result) => {
+				Swal.fire({
+				icon:"success",
+				title:"You completed your College!",
+				confirmButtonText:"Student loan time :("
+				});
+			});
+		}
+
+	});
+	message(`Your student loan increased by ${yearly_student_fees}$ as yearly student loans at 10% interest rate`);
+
+
+};
+
 
 
 
@@ -1222,8 +1311,7 @@ function student_pass(){
 	else {
 		document.write("Error in student_pass()");
 	}
-
-
+	
 
 	message(`You passed out as a ${deg}`);
 	user.job = "Unemployed";
@@ -2952,7 +3040,7 @@ function purchase(item){
 
 function death(){
 	var age = (user.age-user.age%12)/12;
-
+	$(".console").hide();
 	var html = `
 	<br><hr><br>
 	Name : ${user.name}<br>
@@ -2985,7 +3073,6 @@ function death(){
 	$("#profile").hide();
 	$("#assets").hide();
 	$("#activities").hide();
-	message(`<h2>You died</h2>`);
 
 };
 
@@ -3070,7 +3157,7 @@ function confirm(title,text=null){
 
 
 
-var intro_disabled = false;
+var intro_disabled = true;
 function intro(){
 	if (intro_disabled == false){
 		var html = 
