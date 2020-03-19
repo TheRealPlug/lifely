@@ -231,6 +231,14 @@ var total_student_loan = 0;
 var total_years = 0;
 var is_jailed = false;
 function age_events(){
+	if (!is_student){
+		let special = randint(1,750);
+		if (special == 1){
+			accident();
+		}
+	}
+
+
 	if (user.age/12 > 60){
 		if (user.age/12 > 95){
 			var die_chance = randint(1,10);
@@ -525,7 +533,7 @@ function student_loan_notice(){
 function monthly_budget(){
 	if (is_jailed == false){
 		if (has_job){
-			var amt = Math.floor(user.salary*21/100);
+			var amt = Math.floor(user.salary*28/100);
 			money -= total_budget;
 			message(`You paid <b>${total_budget}$</b> as monthly budget`);
 			if (amt > total_budget){
@@ -601,7 +609,7 @@ function modify_budget(){
 	};
 
 	if (has_job){
-		var recom = Math.floor(user.salary*randint(20,25)/100+assets_costs);
+		var recom = Math.floor(user.salary*randint(28,33)/100+assets_costs);
 
 	}
 	else {
@@ -672,7 +680,123 @@ function randint(min,max){
 
 
 
+function accident(){
+	message(`You met an accident`);
+	let list = ["hit by a car","hit by a truck","hit by a bike",
+	"ruthlessly beaten by some criminals","shot by an unknown man",
+	"stabbed by a thief","crushed by a pole","electrocuted by hanging wires"];
 
+	var cause = `<h4>You were ${list[randint(0,list.length-1)]}.</h4>`;
+	message(cause);
+	var surv = randint(0,100);
+	var mort = 100-surv;
+	let html = `
+	${cause}<br><br>
+	Survival Chance - <b>${surv}%</b><br>
+	Mortality Chance - <b>${mort}%</b><br>
+	`
+	health = health - randint(50,70);
+	display();
+	Swal.fire({
+		allowOutsideClick:false,
+		icon:"warning",
+		title:"You were in an accident!",
+		html:html,
+		confirmButtonText:"Continue",
+		confirmButtonColor:"#d31747"
+	}).then((result) => {
+		if (result.value){
+			let chance = randint(0,100);
+			if (chance > surv){
+				death();
+			}
+			else {
+				accident_survive();
+			}
+
+		}
+
+	});
+
+};
+
+function accident_survive(){
+	message(`You survived the fatal accident`);
+	health = health + randint(30,40);
+	display();
+	if (has_job && user.salary > 3000 && user.salary <= 8000){
+		var real_bill = randint(75000,120000);
+		var bill = randint(25000,50000);
+		var notice = `
+		Hospital Bill - <del>${real_bill}$</del>&nbsp;<b>${bill}$</b><br>
+		Savings - <b>${real_bill-bill}$</b><br><br>
+		You got medical benefits for employed middle class citizens.<br>
+		`;
+	}
+	else if (has_job && user.salary <= 3000){
+		var real_bill = randint(75000,120000);
+		var bill = randint(20000,30000);
+		var notice = `
+		Hospital Bill - <del>${real_bill}$</del>&nbsp;<b>${bill}$</b><br>
+		Savings - <b>${real_bill-bill}$</b><br><br>
+		You got medical benefits for employed low salary citizens.<br>
+		`;
+	}
+	else if (has_job && user.salary > 8000){
+		var bill = randint(75000,120000);
+		var notice = `
+		Hospital Bill - <b>${bill}$</b><br><br>
+		You did not get any medical benefits.<br>
+		`;
+	}
+	else if (!has_job){
+		var real_bill = randint(75000,120000);
+		var bill = randint(10000,20000);
+		var notice = `
+		Hospital Bill - <del>${real_bill}$</del>&nbsp;<b>${bill}$</b><br>
+		Savings - <b>${real_bill-bill}$</b><br><br>
+		You got medical benefits for unemployed citizens.
+		`;
+	};
+	let html = `
+	The doctors successfully saved you from dying!<br>
+	Now you'll need to pay the hospital bills.<br><br>
+	${notice}
+	`;
+
+	Swal.fire({
+		allowOutsideClick:false,
+		icon:"success",
+		title:"You survived the accident!",
+		html:html,
+		confirmButtonText:"I'm glad"
+
+	}).then((result) => {
+		if (result.value){
+			let html = `<br>
+			You , <b>${user.name}</b> are entitled to pay <b>${bill}$</b>
+			as hospital fees to the respective hospital. All
+			benefits provided by <b>Goverment Of ${user.country}</b> have
+			already been availed. The competent authority shall
+			receive the said amount and release you as soon as possible.
+			`;
+			Swal.fire({
+				icon:"info",
+				allowOutsideClick:false,
+				title:"Hospital Fees Notice",
+				html:html,
+				confirmButtonText:`Pay ${bill}$`
+			}).then((result) => {
+				if (result.value){
+					money = money - bill;
+					display();
+					message(`You paid <b>${bill}$</b> as hospital bills`);
+				}
+			});
+
+		}
+	});
+};
 
 
 
@@ -3164,7 +3288,7 @@ function confirm(title,text=null){
 
 
 
-var intro_disabled = true;
+var intro_disabled = false;
 function intro(){
 	if (intro_disabled == false){
 		var html = 
