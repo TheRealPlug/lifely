@@ -545,7 +545,8 @@ function monthly_budget(){
 			}
 		}*/
 		else if (user.job == "Unemployed"){
-			var amt = money*randint(8,9)/100;
+
+			var amt = randint(300,320);
 			money -= total_budget;
 			message(`You paid <b>${total_budget}$</b> as monthly budget`);
 			if (amt > total_budget){
@@ -605,7 +606,7 @@ function modify_budget(){
 	}
 	else {
 		if (user.job == "Unemployed"){
-			let range = randint(money*10/100,money*25/100);
+			var range = randint(300,320);
 			var recom = Math.floor(range+assets_costs);
 			if (recom < 100){
 				recom = 100;
@@ -631,7 +632,7 @@ function modify_budget(){
 		inputValue:recom,
 		inputValidator: (val) => {
 			let isnum = /^\d+$/.test(val);
-			if (isnum == true && val > money/2){
+			if (isnum == true && val > money/2 && val != recom){
 				return "Too big of a budget for you!"
 			}
 			else if (isnum == true && val >= 100){
@@ -3163,7 +3164,7 @@ function confirm(title,text=null){
 
 
 
-var intro_disabled = false;
+var intro_disabled = true;
 function intro(){
 	if (intro_disabled == false){
 		var html = 
