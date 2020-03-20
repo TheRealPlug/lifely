@@ -32,6 +32,9 @@ var student_fees = 0;
 var total_budget = 100;
 var event_chance = 0;
 var has_disease = false;
+var disease_count = 0;
+var disease_severity = false;
+var DISEASE = false;
 var jail_months = 0;
 var jail_months_spent = 0;
 
@@ -254,10 +257,40 @@ function random_feature(feature){
 };
 
 
+function disease_check(){
+	if (has_disease){
+		if (disease_severity == "Low To Medium"){
+			health -= randint(1,2);
+			morale -= randint(0,2);
+			looks -= randint(0,1);
+		}
+		else if (disease_severity == "High"){
+			health -= randint(2,5);
+			morale -= randint(1,4);
+			looks -= randint(1,2);
+		}		
+		display();
+	}
+	else if (!has_disease){
+		let chance = randint(1,60);
+		if (chance == 1){
+			let chance = randint(1,3)
+			if (chance == 1){
+				disease("High");
+			}
+			else {
+				disease();
+			}
+		}
+	}
 
+
+};
 
 
 function age_events(){
+	disease_check();
+	
 	if (!is_student && !is_jailed){
 		// 1 to 700
 		let special = randint(1,700);
@@ -2180,17 +2213,106 @@ function restaurant(){
 
 
 
+function disease_checkup() {
+	// upgrade this simple system
+	message(`You have been diagnosed with <b>${DISEASE}</b>`);
+	if (disease_severity == "High"){
+		var cost = randint(15000,30000);
+	}
+	else {
+		var cost = randint(5000,15000);
+	}
+	let html = `<br>
+	Cost of Treatment - <b>${cost}$</b><br>
+	Success Chance - <b>67%</b><br>
+	`;
 
+	Swal.fire({
+		title:`Diagnosed with ${DISEASE}`,
+		html:html,
+		icon:"warning",
+		confirmButtonText:"Get Treatment",
+		showCancelButton:true,
+		cancelButtonText:"I'd rather suffer"
+	}).then((result) => {
+		if (result.value){
+			if (has_money(cost)){
+				money -= cost;
+				display();
+				let chance = randint(1,3);
+				
+				if (chance != 1){
+					message(`The treatment for ${DISEASE} was successful`);
+					let html = `<br>You are no longer suffering from
+					<b>${DISEASE}</b>!`
+					Swal.fire({
+						title:"Your disease has been cured!",
+						html:html,
+						icon:"success",
+						confirmButtonText:"Awesome!"
+					});
+					morale += randint(3,5);
+					display();
+					has_disease = false;
+					console.log(has_disease);
+				}
+				else {
+					let html= `<br>
+
+					`;
+					message(`The treatment for ${DISEASE} was unsuccessful`);
+					morale -= randint(5,10);
+					display();
+					Swal.fire({
+						title:"No Luck",
+						icon:"error",
+						html:html,
+						confirmButtonText:"Crap!"
+					});
+				}
+			}
+		}
+	});
+};
 
 
 
 
 
 function checkup(){
+	var cost = randint(100,500);
+	let html = `<br>
+	You will need to pay some money before a doctor checks your
+	health and looks for any illnesses<br><br>
+	Cost of Checkup - <b>${cost}$</b><br>
+	`;
 	Swal.fire({
 		icon:"info",
 		title:"Checkup",
-		text:"Coming Soon!"
+		html:html,
+		confirmButtonText:`Pay ${cost}$`,
+		showCancelButton:true,
+		cancelButtonText:"Nevermind"
+	}).then((result) => {
+		if (result.value){
+			if (has_money(cost)){
+				money -= cost;
+				display();
+				if (has_disease){
+					disease_checkup();
+				}
+				else {
+					morale += randint(0,1);
+					display();
+					Swal.fire({
+						icon:"success",
+						title:"You're healthy as a fruit!",
+						confirmButtonText:"Good News!"
+					});
+				}
+			}
+		}
+
 	});
 };
 
@@ -2691,13 +2813,55 @@ function appeal_result(was_saved,defender){
 	};
 };
 
-/*
-function disease(name,decrease){
 
-	decrement("health",decrease);
+
+function disease(level=null){
+	disease_count += 1;
+	has_disease = true;
+
+	if (level==null){
+		// normal disease
+		var diseases = ["Common Cold","Hepatitis","Obesity",
+		"Flu","Chronic Fatigue","Typhoid","Acne",
+		"Anxiety","Cough",];
+		disease_severity = "Low To Medium";
+	}
+	else {
+		// serious disease
+		var diseases = ["Cancer","Diabetes","Dementia","Hearing Loss",
+		"Heart Disease","High Blood Pressure","Tuberculosis"
+		];
+		disease_severity = "High";
+	};
+
+	DISEASE = diseases[randint(0,diseases.length-1)];
+
+	let html = `
+	<br> You are advised to get the required treatment for 
+	<b>${DISEASE}</b> as soon as possible.<br><br>
+	Disease Severity - <b>${disease_severity}</b>
+	`;
+	message(`You were diagnosed with <b>${DISEASE}</b>`);
+	Swal.fire({
+		title:`You've been diagnosed with ${DISEASE}`,
+		icon:"warning",
+		html:html,
+		confirmButtonText:"Oh No"
+	})
 
 };
-*/
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 function actions(){
@@ -2870,11 +3034,11 @@ function gamble(){
 function activities(){
 	var html = 
 	`<br>
+<button id="hosp-btn" onclick="hospital()" class="btn btn-success">Go To Hospital</button>
+<br><br>
 <button id="gym-btn" onclick="gym()" class="btn btn-danger">Go To Gym</button>
 <br><br>
 <button id="lib-btn" onclick="library()" class="btn btn-danger">Go To Library</button>
-<br><br>
-<button id="hosp-btn" onclick="hospital()" class="btn btn-danger">Go To Hospital</button>
 <br><br>
 <button id="restaurant-btn" onclick="restaurant()" class="btn btn-danger">Go To Restaurant</button>
 <br><br>
@@ -2884,7 +3048,7 @@ function activities(){
 <br><br>
 <button id="crime-btn" onclick="crime()" class="btn btn-danger">Commit Crime</button>
 <br><br>
-<button id="vacation-btn" onclick="vacation()" class="btn btn-success">Go On Vacation</button>
+<button id="vacation-btn" onclick="vacation()" class="btn btn-danger">Go On Vacation</button>
 <br><br>
 
 	`;
