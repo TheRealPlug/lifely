@@ -5,23 +5,49 @@ var user = {
 	"promos":0,"assets":[]
 };
 
+
+// GLOBAL VARIABLES DECLARATION START--------------------------
+
+
 var money = 1000;
 var health = random_feature("health");
 var morale = random_feature("morale");
 var intellect = random_feature("intellect");
 var looks = random_feature("looks");
 var karma = 0;
+var is_student = false;
+var student_months = 0;
+var total_student_loan = 0;
+var total_years = 0;
+var is_jailed = false;
+var intro_disabled = false;
+var total_lib_count = 0;
+var total_gym_count = 0;
+var job_qualified = false;
+var has_job = false;
+var salary = 0;
+var student_months = 0;
+var student_has_loan = false;
+var student_fees = 0;
+var total_budget = 100;
+var event_chance = 0;
+var has_disease = false;
+var jail_months = 0;
+var jail_months_spent = 0;
 
 
+
+
+// GLOBAL VARIABLES DECLARATION END ------------------------------
 start();
 
 
-var count = 0;
+var message_count = 0;
 function message(message){
-	count = count + 1;
-	if (count >= 10){
+	message_count += 1;
+	if (message_count >= 8){
 		$(".console").text("");
-		count = 0;
+		message_count = 0;
 	};
 	$(".console").append(message+"<br>");
 
@@ -147,12 +173,17 @@ function random_country(){
 	"South Africa","Bangladesh","Mongolia","Thailand","Serbia",
 	"Vietnam","Ukraine","Zimbawe","United States","United States",
 	"United States","United States","United States","Canada","Canada",
-	"Russia"
+	"Russia","Burundi","Belize","Bolivia","Slovakia","Laos",
+	"Lebanon","Mauritius","Netherlands","Macedonia","Philippines",
+	"United States","United States","United States","Canada",
+	"United States"
 	]; // Increasing chance of getting United States
 
 	random = randint(0,country_list.length-1);
 	return country_list[random];
 };
+
+
 
 
 function random_name(){
@@ -210,6 +241,7 @@ function random_feature(feature){
 	}
 	else if (feature=="intellect"){
 		var random = randint(45,85);
+
 	}
 	else if (feature=="morale"){
 		var random = randint(75,95);
@@ -225,16 +257,15 @@ function random_feature(feature){
 
 
 
-var is_student = false;
-var student_months = 0;
-var total_student_loan = 0;
-var total_years = 0;
-var is_jailed = false;
 function age_events(){
-	if (!is_student){
-		let special = randint(1,750);
+	if (!is_student && !is_jailed){
+		// 1 to 700
+		let special = randint(1,700);
 		if (special == 1){
 			accident();
+		}
+		else if (special > 50 && special < 75){
+			human_event();
 		}
 	}
 
@@ -529,6 +560,189 @@ function student_loan_notice(){
 
 
 
+function thief_encounter(){
+	let chance = randint(0,1);
+	if (chance == 0){
+		// success
+		let prize = randint(500,2000);
+		message(`You helped police catch a thief`);
+		money += prize;
+		morale += randint(3,6);
+		display();
+		let html = `You were given <b>${prize}$</b> as prize money
+		for catching the thief. The police appreciate your response.`;
+		Swal.fire({
+			icon:"success",
+			title:"You called the police and the thief was caught!",
+			html:html,
+			confirmButtonText:"Amazing!"
+		});
+	}
+	else {
+		message(`The thief confronted you`);
+		Swal.fire({
+			icon:"warning",
+			title:"The thief caught you calling police!",
+			confirmButtonText:"Try to Flee",
+			showCancelButton:true,
+			cancelButtonText:"Fight Him",
+			allowOutsideClick:false
+		}).then((result) => {
+			if (result.value){
+				message(`You fled from the thief`);
+				Swal.fire({
+					icon:"success",
+					title:"You fled from the thief!",
+					confirmButtonText:"Phew"
+				});
+				morale -= randint(3,5);
+				display()
+			}
+			else if (result.dismiss == Swal.DismissReason.cancel){
+				let chance = randint(0,1);
+				if (chance == 0){
+					message(`You beat and handed over the thief`);
+					let prize = randint(500,2000);
+					money += prize;
+					morale += randint(3,6);
+					display()
+					let html = `
+					You handed the thief over to the police after
+					they came to the spot. You've been awarded
+					<b>${prize}$</b> for your valor!
+					`;
+					Swal.fire({
+						icon:"success",
+						title:"You beat the shit out of the thief!",
+						html:html,
+						confirmButtonText:"I Feel Good"
+					});
+				}
+				else {
+					let html=`
+					He spared you but not your bones!
+					He also told you to piss off and mind your own business.
+					`;
+					message(`You were beaten up by the thief`);
+					health -= randint(6,15);
+					morale -= randint(3,6);
+					display();
+					Swal.fire({
+						icon:"error",
+						title:"You got beaten by the thief",
+						html:html,
+						confirmButtonText:"My neck.."
+					});
+				}
+			}
+		});
+	}
+}
+
+
+
+function human_event(){
+	let rand = randint(0,1);
+	if (rand == 0){
+		let html = `<br>
+		The thief hasn't noticed you yet but looks like
+		he is fleeing with some valuables.<br>
+		What do you want to do ?<br>
+		`;
+		Swal.fire({
+			allowOutsideClick:false,
+			icon:"warning",
+			title:"You encounter a thief!",
+			html:html,
+			confirmButtonText:"Run Away",
+			showCancelButton:true,
+			cancelButtonText:"Call the Police"
+		}).then((result)=>{
+			if (result.value){
+				Swal.fire({
+					icon:"success",
+					title:"You ran away from the thief!"
+				});
+			}
+			else if (result.dismiss == Swal.DismissReason.cancel){
+				thief_encounter();
+			}
+		});
+	}
+	else if (rand == 1){
+		message(`You met an unknown person`);
+		var country = generate("country",1)[0];
+		var amt = randint(20000,50000);
+		let html = `
+		<br>The unknown person wants you to deliver a secret 
+		package of some drugs to <b>${country}</b>.<br><br>
+		He's willing to give you <b>${amt}$</b> for the trouble.
+		He'll be arranging the plane tickets too!
+		<br>
+		`;
+		Swal.fire({
+			icon:"question",
+			title:"An unknown person seeks your attention",
+			html:html,
+			showCancelButton:true,
+			confirmButtonText:"Too Risky!",
+			cancelButtonText:"I'll Deliver"
+		}).then((result) => {
+			if (result.value){
+				Swal.fire({
+					icon:"info",
+					title:"You declined the offer!",
+					confirmButtonText:"Creepy Dude!"
+				});
+			}
+			else if (result.dismiss == Swal.DismissReason.cancel){
+				karma -= 25;
+				let chance = randint(0,1);
+				if (chance == 1){
+					// success
+					message(`You delivered the drug package successfully`);
+					money += amt;
+					morale += randint(3,6);
+					display();
+					let html=`<br>You successfully delivered the package
+					containing drugs to <b>${country}</b> for
+					<b>${amt}$</b>.<br>`;
+					Swal.fire({
+						icon:"success",
+						title:"You delivered the package!",
+						html:html,
+						confirmButtonText:"Easy Money!"
+					});
+				}
+				else {
+					// rip
+					morale -= randint(5,10);
+					message(`You were caught smuggling the drugs`);
+					display();
+					let html = `
+					<br>You are in legal trouble and the person who
+					asked you to deliver the package has gone missing.
+					`;
+					Swal.fire({
+						icon:"error",
+						title:"You were caught smuggling the drugs!",
+						html:html,
+						confirmButtonText:"Shit"
+					}).then((result) => {
+						jail(60);
+					});
+
+				}
+			}
+		});
+	}
+};
+
+
+
+
+
+
 
 function monthly_budget(){
 	if (is_jailed == false){
@@ -580,7 +794,7 @@ function budget_less(){
 };
 
 
-var total_budget = 100;
+
 function budget(){
 
 	let html = `
@@ -817,7 +1031,8 @@ function generate(object,amount){
 		"Malaysia","UAE","Morocco","Luxembourg","New Zealand","Qatar",
 		"South Africa","Bangladesh","Mongolia","Thailand","Serbia",
 		"Vietnam","Ukraine","Zimbawe","United States","United States",
-		"Canada"
+		"Canada","Burundi","Belize","Bolivia","Slovakia","Laos",
+		"Lebanon","Mauritius","Netherlands","Macedonia","Philippines"
 		]; 
 
 		var countries = [];
@@ -881,8 +1096,6 @@ function generate(object,amount){
 
 
 
-
-var event_chance = 0;
 function random_event(){
 	var chance = randint(0,20);
 	if (event_chance==chance){
@@ -1123,10 +1336,6 @@ function study_course(course){
 
 
 
-
-var student_months = 0;
-var student_has_loan = false;
-var student_fees = 0;
 function student_loan(type){
 	if (type=="eng" && intellect >= 70){
 		student_fees = 40000;
@@ -1458,8 +1667,7 @@ function student_pass(){
 
 
 
-var has_job = false;
-var salary = 0;
+
 function jobs(){
 	var list = [{"Senior Engineer":[4000,5000]},
 	{"Teacher":[2000,3000]},{"Firefighter":[2000,3000]},
@@ -1514,7 +1722,6 @@ function jobs(){
 
 
 
-var job_qualified = false;
 function check_job(job_name,salary){
 
 
@@ -1838,7 +2045,7 @@ function ask_raise(){
 
 
 
-var total_gym_count = 0;
+
 function gym(){
 	var max = 250;
 	var min = 50;
@@ -1880,7 +2087,6 @@ function gym(){
 
 
 
-var total_lib_count = 0;
 function library(){
 	var max = 200;
 	var min = 30;
@@ -2134,7 +2340,8 @@ function plastic_surgery(){
 
 
 
-var has_disease = false;
+
+
 function hospital(){
 	var html = 
 	`<br><hr><br>
@@ -2237,8 +2444,6 @@ function crime(){
 
 
 
-var jail_months = 0;
-var jail_months_spent = 0;
 function jail(months){
 	karma = karma - months;
 	if (is_student == true){
@@ -2402,7 +2607,7 @@ function appeal_jail(months){
 	}).then((result) => {
 		if (result.value){
 			// private defender
-			if (money > def_cost){
+			if (has_money(def_cost)){
 				money = money - def_cost;
 				display();
 				message(`You hired a private defender for ${def_cost}$`);
@@ -2420,6 +2625,8 @@ function appeal_jail(months){
 				Swal.fire({
 					icon:"warning",
 					title:"You don't have enough money to hire a Private Defender"
+				}).then((result) => {
+					jail(months);
 				});
 			};
 		}
@@ -2474,6 +2681,7 @@ function appeal_result(was_saved,defender){
 	}
 	else {
 		// wasnt saved
+		message(`You lost the court case and jailed`);
 		Swal.fire({
 			icon:"error",
 			title:"You lost the court case...",
@@ -2768,7 +2976,8 @@ function vacation(){
 	"South Africa","Mongolia","Thailand","Serbia",
 	"Vietnam","Ukraine","United States","Sweden","Denmark",
 	"Canada","Canada","Greece","UAE","India","France",
-	"Russia"
+	"Russia","Burundi","Belize","Bolivia","Slovakia","Laos",
+	"Lebanon","Mauritius","Netherlands","Macedonia","Philippines"
 	];
 	var countries = [];
 	
@@ -3288,7 +3497,6 @@ function confirm(title,text=null){
 
 
 
-var intro_disabled = false;
 function intro(){
 	if (intro_disabled == false){
 		var html = 
@@ -3301,7 +3509,6 @@ function intro(){
 
 		Swal.fire({
 			icon:"info",
-			position:"top",
 			allowOutsideClick:false,
 			title:"Welcome To Lifely",
 			text:"Lifely is a life based online simulator",
@@ -3313,8 +3520,7 @@ function intro(){
 				Swal.fire({
 					title:"<h1>Starting Lifely...</h1>",
 					showConfirmButton:false,
-					allowOutsideClick:false,
-					timer:5000,
+					timer:3000,
 					timerProgressBar:true,
 					toast:true
 				});
