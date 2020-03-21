@@ -20,7 +20,7 @@ var student_months = 0;
 var total_student_loan = 0;
 var total_years = 0;
 var is_jailed = false;
-var intro_disabled = false;
+
 var total_lib_count = 0;
 var total_gym_count = 0;
 var job_qualified = false;
@@ -288,9 +288,7 @@ function disease_check(){
 };
 
 
-function age_events(){
-	disease_check();
-	
+function special_event_check(){
 	if (!is_student && !is_jailed){
 		// 1 to 700
 		let special = randint(1,700);
@@ -302,8 +300,11 @@ function age_events(){
 		}
 	}
 
+};
 
-	if (user.age/12 > 60){
+
+function health_check(){
+if (user.age/12 > 60){
 		if (user.age/12 > 95){
 			var die_chance = randint(1,10);
 			if (die_chance == 5){
@@ -338,7 +339,12 @@ function age_events(){
 		};
 	};
 
-	monthly_budget();
+
+
+};
+
+
+function attribute_check(){
 
 
 	if (user.age/12 > 40){
@@ -353,7 +359,14 @@ function age_events(){
 		};
 	}; 
 
-	if (is_student==true){
+
+};
+
+
+function student_check(){
+
+
+	if (is_student){
 
 		student_months = student_months + 1;
 
@@ -414,7 +427,7 @@ function age_events(){
 
 
 
-		if (student_has_loan == true){
+		if (student_has_loan){
 
 			if (student_months%12==0){
 				
@@ -431,16 +444,11 @@ function age_events(){
 			student_pass();
 		};
 	
-
-
-
 	};
-		
-
-
+	
 	if (has_job == false){
 		if (is_student == false){
-			if (student_has_loan == true){
+			if (student_has_loan){
 				if (user.age/12 >= 30){
 					money = money - total_student_loan;
 					let html = `
@@ -460,13 +468,20 @@ function age_events(){
 			};
 		};
 	};
-	if (has_job == true){
+
+};
+
+
+function job_check(){
+
+
+	if (has_job){
 		user.xp += 1;
 		money = money + user.salary;
 		var rand = randint(0,20);
 		message(`You were paid ${user.salary}$ as your salary`);
 		if (rand == 1){
-			var inc = randint(5,8);
+			var inc = randint(3,5);
 			var raise = Math.floor(user.salary*inc/100);
 			message(`You got a raise of ${raise}$`);
 			user.salary = user.salary + raise;
@@ -478,7 +493,7 @@ function age_events(){
 			});
 
 		}
-		if (student_has_loan == true){
+		if (student_has_loan){
 			var loan_paid = Math.floor(user.salary*25/100);
 			if (total_student_loan <= loan_paid ){
 				money = money - total_student_loan;
@@ -512,7 +527,14 @@ function age_events(){
 
 	};
 
-	if (is_jailed == true){
+
+};
+
+
+
+function jail_check(){
+
+	if (is_jailed){
 		morale -= 1;
 		looks -= 1;
 		jail_months_spent += 1;
@@ -539,10 +561,36 @@ function age_events(){
 	};
 
 
+
+};
+
+
+function age_events(){
 	
+	disease_check();
+
+	special_event_check();
+	
+	health_check();
+	
+	monthly_budget();
+
+	attribute_check();
+
+	student_check();
+
+	job_check();
+	
+	jail_check();
+
+
+
 	display();
 
 };
+
+
+
 
 
 
@@ -629,7 +677,7 @@ function thief_encounter(){
 					confirmButtonText:"Phew"
 				});
 				morale -= randint(3,5);
-				display()
+				display();
 			}
 			else if (result.dismiss == Swal.DismissReason.cancel){
 				let chance = randint(0,1);
@@ -677,6 +725,7 @@ function thief_encounter(){
 function human_event(){
 	let rand = randint(0,1);
 	if (rand == 0){
+		message(`You encounter a thief`);
 		let html = `<br>
 		The thief hasn't noticed you yet but looks like
 		he is fleeing with some valuables.<br>
@@ -692,6 +741,7 @@ function human_event(){
 			cancelButtonText:"Call the Police"
 		}).then((result)=>{
 			if (result.value){
+				message(`You ran away from the thief`);
 				Swal.fire({
 					icon:"success",
 					title:"You ran away from the thief!"
@@ -800,8 +850,12 @@ function monthly_budget(){
 			}
 		}*/
 		else if (user.job == "Unemployed"){
-
-			var amt = randint(300,320);
+			if (user.age > 50 && user.salary){
+				var amt = Math.floor(user.salary*28/100);
+			}
+			else {
+				var amt = randint(300,320);
+			}
 			money -= total_budget;
 			message(`You paid <b>${total_budget}$</b> as monthly budget`);
 			if (amt > total_budget){
@@ -813,6 +867,7 @@ function monthly_budget(){
 	}
 
 };
+
 
 
 function budget_less(){
@@ -887,10 +942,10 @@ function modify_budget(){
 		inputValue:recom,
 		inputValidator: (val) => {
 			let isnum = /^\d+$/.test(val);
-			if (isnum == true && val > money/2 && val != recom){
+			if (isnum && val > money/2 && val != recom){
 				return "Too big of a budget for you!"
 			}
-			else if (isnum == true && val >= 100){
+			else if (isnum && val >= 100){
 				message(`You changed your monthly budget to <b>${val}$</b>`);
 				Swal.fire({
 					icon:"success",
@@ -1072,7 +1127,7 @@ function generate(object,amount){
 		for (x=0;x!=amount;x++){
 			var random = randint(0,list.length-1);
 			var c = list[random];
-			if (c in countries){
+			if (countries.includes(c)){
 				x = x - 1;
 			}
 			else {
@@ -1114,8 +1169,8 @@ function generate(object,amount){
 		'Jackson','Coleson','Carlson','Mason','Bond'
 
 		];
-		let fname = male_name[randint(0,male_name.length)];
-		let lname = last_name[randint(0,last_name.length)];
+		let fname = male_name[randint(0,male_name.length-1)];
+		let lname = last_name[randint(0,last_name.length-1)];
 		if (user.name.includes(fname) || user.name.includes(lname)){
 			generate("name",1);
 		}
@@ -1637,7 +1692,7 @@ function leave_study(){
 	$("#student").attr("onclick","actions()");
 	$("#student").attr("class","btn-lg btn-danger");
 	$("#student").attr("id","actions");
-	if (student_has_loan == true){
+	if (student_has_loan){
 		total_student_loan = Math.floor(student_fees/48*student_months);
 		message(`Despite leaving school , you're liable to pay ${total_student_loan}$ in student loans`);
 	}
@@ -1659,25 +1714,25 @@ var degree = [];
 function student_pass(){
 	deg = user.job;
 
-	if (deg.includes("Engineer") == true){
+	if (deg.includes("Engineer")){
 		var course = "ENG";
 	}
-	else if (deg.includes("Graduate") == true){
+	else if (deg.includes("Graduate")){
 		var course = "GRAD";
 	}
-	else if (deg.includes("Commerce") == true){
+	else if (deg.includes("Commerce")){
 		var course = "COM";
 	}
-	else if (deg.includes("Arts") == true){
+	else if (deg.includes("Arts")){
 		var course = "ARTS";
 	}
-	else if (deg.includes("Law") == true){
+	else if (deg.includes("Law")){
 		var course = "LAW";
 	}
-	else if (deg.includes("Medical") == true){
+	else if (deg.includes("Medical")){
 		var course = "MED";
 	}
-	else if (deg.includes("Community") == true){
+	else if (deg.includes("Community")){
 		var course = "COMMUNITY";
 	}
 	else {
@@ -1726,20 +1781,22 @@ function jobs(){
 	for (x=0;x<6;x++){
 		random = randint(0,list.length-1);
 		var sel = list[random];
-		if (sel in jobs){
+		var job_name = Object.keys(sel);
+		if (Object.keys(jobs).includes(job_name[0])){
 			x = x - 1;
+			console.log(job_name);
 		}
 		else {
-		var job_name = Object.keys(sel);
-		var min = sel[job_name][0];
-		var max = sel[job_name][1];
+			
+			var min = sel[job_name][0];
+			var max = sel[job_name][1];
 
-		salary = randint(min,max);
-		jobs[job_name] = salary;
-		var btn = `<br><button onclick="check_job('${job_name}',${salary})" 
-		class="w3-round w3-ripple w3-btn w3-indigo w3-hover-red">
-		${job_name} : ${salary}$ / month</button><br>`;
-		btns.push(btn);
+			salary = randint(min,max);
+			jobs[job_name] = salary;
+			var btn = `<br><button onclick="check_job('${job_name}',${salary})" 
+			class="w3-round w3-ripple w3-btn w3-indigo w3-hover-red">
+			${job_name} : ${salary}$ / month</button><br>`;
+			btns.push(btn);
 		};
 	};
 	var reload_btn = `<br><br><button onclick="jobs()" class="btn-lg btn-secondary">View More Jobs</button>`;
@@ -1897,7 +1954,7 @@ function check_job(job_name,salary){
 	for (x in degree){
 		for (y in req){
 			if (degree[x] == req[y]){
-				if (need_xp != true){
+				if (!need_xp){
 					job_qualified = true;
 				}
 				else{
@@ -1912,7 +1969,7 @@ function check_job(job_name,salary){
 	`<hr><br>Job name - ${job_name}<br>
 	Salary - <b>${salary}$/month</b><br>`;
 
-	if (need_xp == true){
+	if (need_xp){
 		html = html+`Experience Needed - <b>${xp/12} years</b><br><br><hr>`;
 	}
 	else {
@@ -1931,7 +1988,7 @@ function check_job(job_name,salary){
 		cancelButtonText:"Leave"
 	}).then((result) => {
 		if (result.value){
-			if (job_qualified == true){
+			if (job_qualified){
 				job_qualified = false;
 				start_job(job_name,salary);
 			}
@@ -2051,7 +2108,7 @@ function ask_raise(){
 	chance = randint(0,10);
 	if (chance < 5){
 		// raise success
-		var inc = randint(5,8);
+		var inc = randint(3,5);
 		var raise = Math.floor(user.salary*inc/100);
 		user.salary += raise;
 		user.promos += 1;
@@ -2254,7 +2311,6 @@ function disease_checkup() {
 					morale += randint(3,5);
 					display();
 					has_disease = false;
-					console.log(has_disease);
 				}
 				else {
 					let html= `<br>
@@ -2319,7 +2375,7 @@ function checkup(){
 
 function medicine(){
 	// cost partially dependent on person's salary
-	if (has_job == true && user.salary <= 4000 ){
+	if (has_job && user.salary <= 4000 ){
 		var cost = Math.floor(user.salary*30/100);
 		let real_cost = randint(2000,6000);
 		var html = `<br>You are getting cheap medicine due to government
@@ -2361,7 +2417,7 @@ function medicine(){
 	}).then((result) => {
 
 		if (result.value){
-			if (has_money(cost) == true){
+			if (has_money(cost)){
 				increase("health",3,8);
 				message(`You bought western medicine for ${cost}$`);
 				let html = `
@@ -2424,7 +2480,7 @@ function plastic_surgery(){
 		cancelButtonText:"Not for me"
 	}).then((result) =>{
 		if (result.value){
-			if (has_money(cost) == true){
+			if (has_money(cost)){
 				money = money - cost;
 				let fail = randint(0,4);
 				let rand = randint(5,25);
@@ -2568,7 +2624,7 @@ function crime(){
 
 function jail(months){
 	karma = karma - months;
-	if (is_student == true){
+	if (is_student){
 		message("You were rusticated from your college");
 		$("#student").attr("class","btn-lg btn-warning");
 		$("#student").attr("id","jail");
@@ -2772,7 +2828,7 @@ function appeal_jail(months){
 
 
 function appeal_result(was_saved,defender){
-	if (was_saved == true){
+	if (was_saved){
 		if (defender == "private"){
 			Swal.fire({
 				icon:"success",
@@ -2933,7 +2989,7 @@ function gamble_result(option,amount){
 
 
 function gamble_start(amount){
-	if (has_money(amount) == true){
+	if (has_money(amount)){
 		money -= amount;
 		display();
 		let html = `
@@ -3004,13 +3060,13 @@ function gamble(){
 		cancelButtonText:"Nevermind",
 		inputValidator: (cost) => {
 			let isnum = /^\d+$/.test(cost);
-			if (isnum == true){
+			if (isnum){
 				gamble_start(cost);
 			}
 			else if (!cost){
 				return 'You need to bet some money!'
 			}
-			else if (isnum != true){
+			else if (!isnum){
 				return 'Enter only a number!'
 			}
 			else if (cost < 100){
@@ -3080,7 +3136,7 @@ function profile(){
 	Country - <b>${user.country}</b><br>
 	Occupation - <b>${user.job}</b><br>
 	`;
-	if (student_has_loan == true){
+	if (student_has_loan){
 		html = html+`Student Loan - <b>${total_student_loan}$</b><br>`;
 	};
 
@@ -3146,9 +3202,9 @@ function vacation(){
 	var countries = [];
 	
 	for (x=0;x<5;x++){
-		random = randint(0,country_list.length);
+		random = randint(0,country_list.length-1);
 		var sel = country_list[random];
-		if (sel in countries){
+		if (countries.includes(sel)){
 			x = x - 1;
 		}
 		else if (sel == user.country){
@@ -3195,7 +3251,7 @@ function vacation(){
 				`<br><hr><br>`
 			}).then((result) => {
 				if (result.value){
-					if (has_money(cost) == true){
+					if (has_money(cost)){
 						money = money - cost;
 						increase("morale",20,35);
 						message(`You went on a vacation to ${country}`);
@@ -3326,7 +3382,7 @@ function purchase_house(name,cost){
 	};
 
 
-	if (discount == true){
+	if (discount){
 		var html = `
 		Price - <del>${cost}$</del> <b>${price}$</b><br>
 		Discount - <b>${cost-price}$</b><br>
@@ -3345,7 +3401,7 @@ function purchase_house(name,cost){
 		cancelButtonText:"I'll pass"
 	}).then((result) => {
 		if (result.value){
-			if (has_money(price) == true){
+			if (has_money(price)){
 				money = money - price;
 				Swal.fire({
 					icon:"success",
@@ -3385,7 +3441,7 @@ function purchase_vehicle(name,cost){
 	};
 
 
-	if (discount == true){
+	if (discount){
 		var html = `
 		Price - <del>${cost}$</del> <b>${price}$</b><br>
 		Discount - <b>${cost-price}$</b><br>
@@ -3404,7 +3460,7 @@ function purchase_vehicle(name,cost){
 		cancelButtonText:"Not Interested"
 	}).then((result) => {
 		if (result.value){
-			if (has_money(price) == true){
+			if (has_money(price)){
 				money = money - price;
 				Swal.fire({
 					icon:"success",
@@ -3544,7 +3600,6 @@ function purchase(item){
 
 function death(){
 	var age = (user.age-user.age%12)/12;
-	$(".console").hide();
 	var html = `
 	<br><hr><br>
 	Name : ${user.name}<br>
@@ -3564,20 +3619,34 @@ function death(){
 		html:html,
 		confirmButtonText:"RIP"
 	});
-	if (has_job == true){
+	if (has_job){
 		$("#job").hide();
 	}
-	else if (is_jailed == true){
+	else if (is_jailed){
 		$("#jail").hide();
 	}
 	else{
 		$("#actions").hide();
 	};
+	let content = `
+	<h2 class="text-danger"><b>RIP</b> ${user.name}</h2><br>
+	`;
+
+	$(".console").html("");
+	$(".console").html(content);
 	$("#update").hide();
 	$("#profile").hide();
 	$("#assets").hide();
 	$("#activities").hide();
-
+	$("#money-block").html(`Died with <b>${money}$</b>`);
+	$("#health-block").html("<b>DEAD</b>");
+	$("#morale-block").hide();
+	$("#morale-icon").hide();
+	$("#intellect-icon").hide();
+	$("#intellect-block").hide();
+	$("#looks-block").hide();
+	$("#looks-icon").hide();
+	display();
 };
 
 
@@ -3612,11 +3681,16 @@ function update(){
 	if (user.age % 12 != 0){
 		var months = user.age%12;
 		var years = (user.age-months)/12;
-		$("#age").text(`Age : ${years} years ${months} months`);
+		if (months != 1){
+			$("#age").html(`${years} YEARS ${months} MONTHS`);
+		}
+		else {
+			$("#age").html(`${years} YEARS ${months} MONTH`);
+		}
 	}
 	else{
 		var years = user.age/12;
-		$("#age").text(`Age : ${years} years`);
+		$("#age").html(`${years} YEARS`);
 
 	};
 	if (money <= 100){
@@ -3631,7 +3705,7 @@ function update(){
 		}
 	};
 
-	if (is_jailed != true){
+	if (!is_jailed){
 		random_event();
 	};
 	if (is_jailed){
@@ -3660,7 +3734,7 @@ function confirm(title,text=null){
 
 
 
-
+var intro_disabled = true;
 function intro(){
 	if (intro_disabled == false){
 		var html = 
