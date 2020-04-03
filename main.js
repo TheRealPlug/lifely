@@ -3734,7 +3734,7 @@ function confirm(title,text=null){
 
 
 
-var intro_disabled = true;
+var intro_disabled = false;
 function intro(){
 	if (intro_disabled == false){
 		var html = 
