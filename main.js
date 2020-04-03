@@ -3651,14 +3651,64 @@ function death(){
 
 
 
+function settings(){
+	let html = `
+	<br>
+	<button onclick="credits()" class="btn btn-lg btn-success">Credits</button>
+	<br><br>
+	<button onclick="contact()" class="btn btn-lg btn-success">Contact</button>
+	`;
+	Swal.fire({
+		title:"Settings",
+		position:"top",
+		showConfirmButton:false,
+		html:html
+	});
+
+
+}
 
 
 
+function credits(){
+	let html = `
+	<br>
+	Game Developer - <b class="w3-text-blue">wraithM17</b><br><br>
+	Icons by <b>FontAwesome</b><br>
+	GUI by <b>Bootstrap</b> and <b>SweetAlert2</b><br><br>
+	MADE WITH <i class="fas fa-heart" style="color:#d0142b"></i>
+	<br>
+	`;
+	Swal.fire({
+		title:"Credits",
+		html:html,
+		icon:"info",
+		confirmButtonText:"Ok"
+	})
+};
 
 
 
+function contact(){
+	let html = `
+	<br>
+	I am open to feedback on the game.
+	In case you'd like to contact me regarding the game,
+	hit me up by any of the following means below!
+	<br><br><hr><br>
+	Email - <b class="text-success">wraithM17@gmail.com</b><br>
+	Reddit - <b>wraithM17</b><br>
+	Discord - <b>wraithM17#2817</b><br>
+	<br>
+	`;
+	Swal.fire({
+		title:"Contact",
+		html:html,
+		icon:"info",
+		confirmButtonText:"Back To Game"
+	});
 
-
+}
 
 
 
@@ -3776,6 +3826,12 @@ function intro(){
 function main(){
 	intro();
 	$("#update").click(update);
+	$("#settings").hover(function (){
+		$("#settings-icon").attr("class","fa fa-lg fa-cog fa-rotate-270");
+	});
+	$("#settings").mouseleave(function (){
+		$("#settings-icon").attr("class","fa fa-lg fa-cog");
+	})
 		
 };
 $(document).ready(main());
