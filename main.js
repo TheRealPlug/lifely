@@ -41,6 +41,7 @@ var jail_months_spent = 0;
 
 
 
+
 // GLOBAL VARIABLES DECLARATION END ------------------------------
 start();
 
@@ -161,27 +162,29 @@ function increase(type,min,max){
 
 
 
-function random_country(){
-	var country_list = [
-	"United States","Canada","United Kingdom","India","Pakistan",
-	"China","Saudi Arabia","Sri Lanka","Mexico","Sweden","Norway",
-	"Denmark","Finland","Russia","Japan","Taiwan","South Korea",
-	"Indonesia","Singapore","Italy","Hungary","Switzerland",
-	"Poland","Germany","France","Portugal","Spain","Ireland",
-	"Iceland","Argentina","Brazil","Uruguay","Cuba","Albania",
-	"Australia","Austria","Belgium","Belarus","Estonia","Bulgaria",
-	"Chile","Turkey","Greece","Cyprus","Croatia","Costa Rica",
-	"Egypt","Israel","Kuwait","Latvia","Iran","Slovenia","Lithuania",
-	"Malaysia","UAE","Morocco","Luxembourg","New Zealand","Qatar",
-	"South Africa","Bangladesh","Mongolia","Thailand","Serbia",
-	"Vietnam","Ukraine","Zimbawe","United States","United States",
-	"United States","United States","United States","Canada","Canada",
-	"Russia","Burundi","Belize","Bolivia","Slovakia","Laos",
-	"Lebanon","Mauritius","Netherlands","Macedonia","Philippines",
-	"United States","United States","United States","Canada",
-	"United States"
-	]; // Increasing chance of getting United States
 
+function random_country(){
+
+	var country_list = [
+		"United States","Canada","United Kingdom","India","Pakistan",
+		"China","Saudi Arabia","Sri Lanka","Mexico","Sweden","Norway",
+		"Denmark","Finland","Russia","Japan","Taiwan","South Korea",
+		"Indonesia","Singapore","Italy","Hungary","Switzerland",
+		"Poland","Germany","France","Portugal","Spain","Ireland",
+		"Iceland","Argentina","Brazil","Uruguay","Cuba","Albania",
+		"Australia","Austria","Belgium","Belarus","Estonia","Bulgaria",
+		"Chile","Turkey","Greece","Cyprus","Croatia","Costa Rica",
+		"Egypt","Israel","Kuwait","Latvia","Iran","Slovenia","Lithuania",
+		"Malaysia","UAE","Morocco","Luxembourg","New Zealand","Qatar",
+		"South Africa","Bangladesh","Mongolia","Thailand","Serbia",
+		"Vietnam","Ukraine","Zimbawe","United States","United States",
+		"United States","United States","United States","Canada","Canada",
+		"Russia","Burundi","Belize","Bolivia","Slovakia","Laos",
+		"Lebanon","Mauritius","Netherlands","Macedonia","Philippines",
+		"United States","United States","United States","Canada",
+		"United States"
+	]; // Increasing chance of getting United States
+		
 	random = randint(0,country_list.length-1);
 	return country_list[random];
 };
@@ -1108,7 +1111,7 @@ function accident_survive(){
 function generate(object,amount){
 
 	if (object == "country"){
-		var list = [
+		let list = [
 		"United States","Canada","United Kingdom","India","Pakistan",
 		"China","Saudi Arabia","Sri Lanka","Mexico","Sweden","Norway",
 		"Denmark","Finland","Russia","Japan","Taiwan","South Korea",
@@ -3295,7 +3298,7 @@ function exercise(){
 
 
 function vacation(){
-	var country_list = [
+	let country_list = [
 	"United States","Canada","United Kingdom","India",
 	"China","Sri Lanka","Mexico","Sweden","Norway",
 	"Denmark","Finland","Russia","Japan","Taiwan","South Korea",
@@ -3915,24 +3918,180 @@ function intro(){
 			text:"Lifely is a life based online simulator",
 			html:html,
 			footer:`Lifely has been created by wraithM17`,
-			confirmButtonText:"Start Lifely"
+			confirmButtonText:"Start Lifely",
+			showCancelButton:true,
+			cancelButtonText:"Custom Life"
 		}).then((result) => {
 			if (result.value){
-				Swal.fire({
-					title:"<h1>Starting Lifely...</h1>",
-					showConfirmButton:false,
-					timer:3000,
-					timerProgressBar:true,
-					toast:true
-				});
+				start_animation();
+			}
+			else if (result.dismiss == Swal.DismissReason.cancel){
+				custom_life();
 
 			}
-
 		});
 
 	};
 
 };
+
+
+function start_animation(){
+	Swal.fire({
+		title:"<h1>Starting Lifely...</h1>",
+		showConfirmButton:false,
+		timer:3000,
+		timerProgressBar:true,
+		toast:true
+	});
+}
+
+
+
+
+function custom_life(){
+	let html = `
+	<br>
+	You have decided to start off as a custom character.
+	This means that you'll be able to set some custom features
+	like your name and your country. Your character's attributes
+	like intellect and looks are still randomized and not 
+	customizable.
+	`;
+	Swal.fire({
+		title:"Custom Life",
+		html:html,
+		confirmButtonText:"Choose Name",
+		showCancelButton:true,
+		cancelButtonText:"Nevermind",
+		allowOutsideClick:false,
+		icon:"info"
+	}).then((result) => {
+		if (result.value){
+			custom_character("name");
+		}
+		else if (result.dismiss == Swal.DismissReason.cancel){
+			start_animation();
+		}
+	});
+
+
+
+}
+
+
+function custom_character(attr){
+	if (attr == "name"){
+		Swal.fire({
+			allowOutsideClick:false,
+			title:"Your Name",
+			icon:"question",
+			text:"Choose a suitable full name for yourself",
+			input:"text",
+			inputValue:random_name(),
+			confirmButtonText:"Proceed",
+			inputValidator: (value) => {
+				let check = /^[a-z][a-z\s]*$/i.test(value);
+				if (check && value.length <= 30 && value.length >= 5){
+					$(".console").html("");
+					message(`<del>You've started your journey as ${user.name}</del>`);
+					message(`You've got ${money}$ with you`);
+					message(`<del>You're currently living in <u>${user.country}</u></del>`);
+				
+					user.name = value;
+
+					custom_character("country");
+				}
+				else if (check && value.length > 30 ){
+					return "Your name is too big!"
+				}
+				else if (check && value.length < 5 ){
+					return "Your name is too short!"
+				}
+				else {
+					return "Invalid Name. Only use alphabets!"
+				}
+			}
+		})
+	}
+
+	if (attr == "country"){
+		let html = `
+		Type in the name of the country you want to be born in.
+		Lifely will check if the country exists in the game.
+		`;
+		Swal.fire({
+			title:"Your Country",
+			allowOutsideClick:false,
+			icon:"question",
+			html:html,
+			footer:"Note : There are limited countries in Lifely",
+			confirmButtonText:"Start Lifely",
+			input:"text",
+			inputValidator: (value) => {
+				value = value.charAt(0).toUpperCase() + value.slice(1);
+				console.log(value);
+
+				// temporary solution
+				// find a way to make country_list global ffs
+				var country_list = [
+					"United States","Canada","United Kingdom","India","Pakistan",
+					"China","Saudi Arabia","Sri Lanka","Mexico","Sweden","Norway",
+					"Denmark","Finland","Russia","Japan","Taiwan","South Korea",
+					"Indonesia","Singapore","Italy","Hungary","Switzerland",
+					"Poland","Germany","France","Portugal","Spain","Ireland",
+					"Iceland","Argentina","Brazil","Uruguay","Cuba","Albania",
+					"Australia","Austria","Belgium","Belarus","Estonia","Bulgaria",
+					"Chile","Turkey","Greece","Cyprus","Croatia","Costa Rica",
+					"Egypt","Israel","Kuwait","Latvia","Iran","Slovenia","Lithuania",
+					"Malaysia","UAE","Morocco","Luxembourg","New Zealand","Qatar",
+					"South Africa","Bangladesh","Mongolia","Thailand","Serbia",
+					"Vietnam","Ukraine","Zimbawe","Burundi","Belize","Bolivia",
+					"Slovakia","Laos","Lebanon","Mauritius",
+					"Netherlands","Macedonia","Philippines",
+				];
+				
+				var country_found = false;
+				for (x=0;x<country_list.length;x++){
+					if (value == country_list[x]){
+						country_found = true
+					}
+				};
+				if (country_found){
+					user.country = value;
+					custom_character("complete");
+				}
+				else {
+					return "Country not found"
+				}
+
+			}
+		})	
+	}
+	if (attr == "complete"){
+		Swal.fire({
+			title:"Custom Character Created",
+			icon:"success",
+			confirmButtonText:"Start Lifely",
+			allowOutsideClick:false
+		}).then((result) => {
+			if (result.value){
+				
+				$(".console").html("");
+				message(`You're playing as a custom character`);
+				message(`You've started your journey as ${user.name}`);
+				message(`You've got ${money}$ with you`);
+				message(`You're currently living in <u>${user.country}</u>`);
+				start_animation();
+			}
+		})
+	}
+
+}
+
+
+
+
 
 
 
@@ -3947,6 +4106,8 @@ function main(){
 	})
 		
 };
+
+
 $(document).ready(main());
 
 
