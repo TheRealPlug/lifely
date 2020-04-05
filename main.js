@@ -367,9 +367,11 @@ function student_check(){
 
 
 	if (is_student){
-
 		student_months = student_months + 1;
-
+		let test_chance = randint(1,10);
+		if (test_chance == 1){
+			student_test();
+		}
 
 		if (student_has_loan == false){
 			// for future
@@ -1750,6 +1752,117 @@ function student_pass(){
 	$("#student").attr("id","actions");
 };
 
+
+
+
+function student_test_result(result){
+
+	if (result == "pass"){
+		message(`You passed the college test`);
+		Swal.fire({
+			title:"You passed the test!",
+			icon:"success",
+			confirmButtonText:"Sweet!"
+		});
+		intellect += randint(1,3);
+
+	}
+	else {
+		message(`You failed the college test`);
+		Swal.fire({
+			title:"You failed the test!",
+			icon:"error",
+			confirmButtonText:"Rats!"
+		});
+		intellect -= randint(2,4);
+	}
+	display()
+};
+
+
+
+
+
+
+
+
+function student_test(start=false){
+	if (start==true){
+		let rand = randint(0,1);
+
+		var p1 = randint(1,12);
+		var p2 = randint(1,12);
+		var p3 = randint(1,20);
+
+		if (rand == 0){
+			var ans = p1*p2+p3;
+			var sign = "+";
+		}
+		else {
+			var ans = p1*p2-p3;
+			var sign = "-";
+		}
+		let question = `${p1} <b>x</b> ${p2} <b>${sign}</b> ${p3}`;
+		let html = `
+		<br>
+		Answer the following question - <br><br>
+		<h3>${question}</h3>
+		<br><br>
+		`;
+		Swal.fire({
+			icon:"question",
+			title:"Test In Process",
+			html:html,
+			confirmButtonText:"Submit",
+			allowOutsideClick:false,
+			input:"text",
+			timer:10000,
+			timerProgressBar:true,
+
+			inputValidator: (answer) => {
+				if (answer == ans){
+					student_test_result("pass");
+				}
+				else {
+					student_test_result("fail");
+				}
+			}
+		}).then((result) => {
+			if (result.dismiss == Swal.DismissReason.timer){
+				student_test_result("fail");
+			};
+		});
+	}
+	else{
+		let html=`
+		<br><br>
+		You will have <b>10</b> seconds to answer the question.<br>
+		You will need to answer the question correctly to pass the test.
+		<br><br>
+		`
+		Swal.fire({
+			icon:"info",
+			title:"College Test",
+			html:html,
+			confirmButtonText:"Take the Test",
+			showCancelButton:true,
+			cancelButtonText:"Don't care",
+			allowOutsideClick:false
+
+		}).then((result)=> {
+			if (result.value){
+				message(`You took the college test`);
+				student_test(true);
+			}
+			else if (result.dismiss == Swal.DismissReason.cancel){
+				message(`You ignored a college test and failed in it`);
+				intellect -= randint(1,2);
+				student_test_result("fail");
+
+			}
+		});
+	};
+};
 
 
 
