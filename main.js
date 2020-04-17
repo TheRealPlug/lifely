@@ -2860,6 +2860,10 @@ function jail_bully(){
 
 };
 
+function student_events(){
+
+
+}
 
 
 
@@ -3773,6 +3777,9 @@ function settings(){
 	<button onclick="credits()" class="btn btn-lg btn-success">Credits</button>
 	<br><br>
 	<button onclick="contact()" class="btn btn-lg btn-success">Contact</button>
+	<br><br>
+	<button onclick="help()" class="btn btn-lg btn-success">Help</button>
+	<br><br>
 	`;
 	Swal.fire({
 		title:"Settings",
@@ -3799,7 +3806,7 @@ function credits(){
 		title:"Credits",
 		html:html,
 		icon:"info",
-		confirmButtonText:"Ok"
+		confirmButtonText:"Back To Game"
 	})
 };
 
@@ -3828,7 +3835,25 @@ function contact(){
 
 
 
+function help(){
+	let html=`
+	<br>
+	Press the button below to view help.
+	Alternatively , you could contact us for other queries.
+	<br><br>
+	<a href="https://github.com/wraithM17/lifely/wiki/Help" 
+	target="_blank" class="w3-button w3-blue">View Help</a><br>
+	`
+	Swal.fire({
+		title:"Help",
+		showCloseButton:true,
+		html:html,
+		icon:"success",
+		showConfirmButton:false
 
+	});
+
+}
 
 
 
@@ -3876,6 +3901,9 @@ function update(){
 	};
 	if (is_jailed){
 		jail_events();
+	}
+	if (is_student){
+		student_events();
 	}
 	age_events();
 	display();
@@ -3942,7 +3970,8 @@ function start_animation(){
 		showConfirmButton:false,
 		timer:3000,
 		timerProgressBar:true,
-		toast:true
+		toast:true,
+		position:top
 	});
 }
 
